@@ -67,6 +67,35 @@ openocd -f openocd.cfg -c "program build/Debug/led_buzzer.elf verify reset exit"
 4. 根目录 `CMakeLists.txt` 是一次性模板，其中已加入应用源码和
    `sp_middleware` 路径，不要删除这些条目。
 
+## `arm-none-eabi-gcc` 找不到
+
+如果 CMake 报错：
+
+```text
+The CMAKE_C_COMPILER: arm-none-eabi-gcc
+is not a full path and was not found in the PATH.
+```
+
+原因是 CMake 只收到编译器名称，并在当前进程的 `PATH` 中查找，而 VS Code
+或 CMake Tools 可能没有继承 STM32CubeCLT 的环境变量。
+
+本工程的工具链文件会自动查找以下常见位置：
+
+- `C:/ST/STM32CubeCLT_*/GNU-tools-for-STM32/bin`
+- `%ProgramFiles%/STMicroelectronics/STM32CubeCLT/*/GNU-tools-for-STM32/bin`
+- Arm GNU Toolchain 的默认安装目录
+- 当前进程 `PATH` 中已有的 `arm-none-eabi-gcc`
+
+如果工具链安装在自定义目录，请在配置时指定：
+
+```bash
+cmake --preset Debug -DARM_GCC_PATH="C:/path/to/GNU-tools-for-STM32/bin"
+```
+
+VS Code 修改工具链后，执行 `CMake: Delete Cache and Reconfigure`，或删除
+`build/` 后重新配置。若本机完全没有工具链，需要安装 STM32CubeCLT 或
+Arm GNU Toolchain。
+
 ## 依赖
 
 - STM32CubeMX 6.18.1
