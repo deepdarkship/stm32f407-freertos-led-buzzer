@@ -50,6 +50,8 @@
 osThreadId defaultTaskHandle;
 osThreadId LEDTaskHandle;
 osThreadId BuzzerTaskHandle;
+osThreadId PlotterTaskHandle;
+osThreadId CanTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -59,6 +61,8 @@ osThreadId BuzzerTaskHandle;
 void StartDefaultTask(void const * argument);
 extern void led_task(void const * argument);
 extern void buzzer_task(void const * argument);
+extern void plotter_task(void const * argument);
+extern void can_task(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -116,6 +120,14 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of BuzzerTask */
   osThreadDef(BuzzerTask, buzzer_task, osPriorityLow, 0, 128);
   BuzzerTaskHandle = osThreadCreate(osThread(BuzzerTask), NULL);
+
+  /* definition and creation of PlotterTask */
+  osThreadDef(PlotterTask, plotter_task, osPriorityLow, 0, 192);
+  PlotterTaskHandle = osThreadCreate(osThread(PlotterTask), NULL);
+
+  /* definition and creation of CanTask */
+  osThreadDef(CanTask, can_task, osPriorityAboveNormal, 0, 256);
+  CanTaskHandle = osThreadCreate(osThread(CanTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
